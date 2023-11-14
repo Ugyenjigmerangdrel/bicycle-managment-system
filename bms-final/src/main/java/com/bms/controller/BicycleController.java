@@ -93,10 +93,6 @@ public class BicycleController extends HttpServlet {
         // Validate the user credentials
         User user = userDAO.getUserByUsername(username);
         
-        System.out.println(password);
-        System.out.println(password == "academy");
-        System.out.println("academy" == "academy");
-       
         if (user != null && user.getPassword().trim().equals(password)) {
             // Authentication successful, store user information in the session
             HttpSession session = request.getSession();
@@ -141,18 +137,31 @@ public class BicycleController extends HttpServlet {
 
 	private void showNewForm(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		RequestDispatcher dispatcher = request.getRequestDispatcher("add-bicycle-form.jsp");
-		dispatcher.forward(request, response);
+		
+		HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        
+		if (user != null) {
+			RequestDispatcher dispatcher = request.getRequestDispatcher("add-bicycle-form.jsp");
+			dispatcher.forward(request, response);
+		} else {
+			response.sendRedirect("login");
+		}
 	}
 
 	private void showEditForm(HttpServletRequest request, HttpServletResponse response)
 			throws SQLException, ServletException, IOException {
-		int id = Integer.parseInt(request.getParameter("id"));
-		Bicycle existingBicycle = bcDAO.selectBicycle(id);
-		RequestDispatcher dispatcher = request.getRequestDispatcher("add-bicycle-form.jsp");
-		request.setAttribute("bicycle", existingBicycle);
-		dispatcher.forward(request, response);
-
+		HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+        	int id = Integer.parseInt(request.getParameter("id"));
+    		Bicycle existingBicycle = bcDAO.selectBicycle(id);
+    		RequestDispatcher dispatcher = request.getRequestDispatcher("add-bicycle-form.jsp");
+    		request.setAttribute("bicycle", existingBicycle);
+    		dispatcher.forward(request, response);
+        } else {
+        	response.sendRedirect("login");
+        }
 	}
 
 	private void insertBC(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {

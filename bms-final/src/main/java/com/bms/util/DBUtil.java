@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class DBUtil {
 	private static String jdbcURL = "jdbc:mysql://localhost:3306/synergy";
 	private static String jdbcUsername = "root";
-	private static String jdbcPassword = "";
+	private static String jdbcPassword = "root";
 	
     public static Connection getConnection() throws SQLException {
     	Connection connection = null;
