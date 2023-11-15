@@ -76,8 +76,8 @@
             data-parent="#accordionSidebar"
           >
             <div class="bg-white py-2 collapse-inner rounded">
-              <a class="collapse-item" href="utilities-color.html">Authorised Users</a>
-              <a class="collapse-item" href="utilities-border.html">Add User</a>
+              <a class="collapse-item" href="listCyclist">Authorised Users</a>
+              <a class="collapse-item" href="newCyclist">Add User</a>
             </div>
           </div>
         </li>

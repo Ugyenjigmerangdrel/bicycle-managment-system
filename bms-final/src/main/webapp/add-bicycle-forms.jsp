@@ -59,13 +59,13 @@
 				<fieldset class="form-group">
 					<label>Bicycle CUUID</label> <input type="text"
 						value="<c:out value='${bicycle.CUUID}' />" class="form-control"
-						name="cuuid">
+						name="cuuid" required="required">
 				</fieldset>
 
 				<fieldset class="form-group">
 					<label>User Country</label> <input type="text"
 						value="<c:out value='${bicycle.SUUID}' />" class="form-control"
-						name="suuid">
+						name="suuid" required="required">
 				</fieldset>
 
 				<button type="submit" class="btn btn-success">ADD

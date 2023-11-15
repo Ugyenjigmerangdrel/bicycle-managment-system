@@ -13,8 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.bms.dao.BicycleDAO;
+import com.bms.dao.CyclistDAO;
 import com.bms.dao.UserDAO;
 import com.bms.model.Bicycle;
+import com.bms.model.Cyclist;
 import com.bms.model.User;
 
 
@@ -27,11 +29,12 @@ public class BicycleController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     private BicycleDAO bcDAO;
     private UserDAO userDAO; // Add UserDAO instance variable
-    
+    private CyclistDAO cyDAO;
    
     public BicycleController() {
     	bcDAO = new BicycleDAO();
     	userDAO = new UserDAO();
+    	cyDAO = new CyclistDAO();
     }
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -63,6 +66,9 @@ public class BicycleController extends HttpServlet {
 			case "/new":
 				showNewForm(request, response);
 				break;
+			case "/newCyclist":
+				showNewCyclistForm(request, response);
+				break;
 			case "/insertBc":
 				insertBC(request, response);
 				break;
@@ -75,7 +81,21 @@ public class BicycleController extends HttpServlet {
 			case "/updateBc":
 				updateBC(request, response);
 				break;
-			
+			case "/insertCy":
+				insertCy(request, response);
+				break;
+			case "/deleteCy":
+				deleteCy(request, response);
+				break;
+			case "/editCy":
+				showEditCyForm(request, response);
+				break;
+			case "/updateCy":
+				updateCy(request, response);
+				break;
+			case "/listCyclist":
+				listCY(request, response);
+				break;
 			default:
 				listBC(request, response);
 				break;
@@ -125,16 +145,25 @@ public class BicycleController extends HttpServlet {
 
         if (user != null) {
             // User is logged in, proceed with listing bicycles
-            List<Bicycle> listBC = bcDAO.selectAllBicycles();
-            request.setAttribute("listBicycle", listBC);
+            List<Bicycle> listBc = bcDAO.selectAllBicycles();
+            request.setAttribute("listBicycle", listBc);
             RequestDispatcher dispatcher = request.getRequestDispatcher("bicycle-list.jsp");
-            dispatcher.forward(request, response);
+            try {
+				dispatcher.forward(request, response);
+			} catch (ServletException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         } else {
             // User is not logged in, redirect to the login page
             response.sendRedirect("login");
         }
     }
-
+	
+	
 	private void showNewForm(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
@@ -169,8 +198,10 @@ public class BicycleController extends HttpServlet {
 		String cuuid = request.getParameter("cuuid");
 		String suuid = request.getParameter("suuid");
 		Bicycle newbicycle = new Bicycle(bicycle_no, cuuid, suuid);
-		bcDAO.insertUser(newbicycle);
-		response.sendRedirect("listBC");
+		bcDAO.insertBicycle(newbicycle);
+		 // Use forward instead of sendRedirect
+		response.sendRedirect("list");
+	   
 	}
 
 	private void updateBC(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
@@ -192,9 +223,121 @@ public class BicycleController extends HttpServlet {
 	}
 	
 	
+	//Cyclists Operation
+	private void listCY(HttpServletRequest request, HttpServletResponse response)
+            throws SQLException, IOException, ServletException {
+        // Check if the user is logged in
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
 
-    
-
+        if (user != null) {
+            // User is logged in, proceed with listing bicycles
+            List<Cyclist> listCy = cyDAO.selectAllCyclist();
+            request.setAttribute("listCyclists", listCy);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("cyclist-list.jsp");
+            try {
+				dispatcher.forward(request, response);
+			} catch (ServletException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        } else {
+            // User is not logged in, redirect to the login page
+            response.sendRedirect("login");
+        }
+    }
 	
+	private void showNewCyclistForm(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		
+		HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        
+		if (user != null) {
+			RequestDispatcher dispatcher = request.getRequestDispatcher("add-cyclist-form.jsp");
+			try {
+				dispatcher.forward(request, response);
+			} catch (ServletException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			response.sendRedirect("login");
+		}
+	}
+	
+	private void insertCy(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
+		String name = request.getParameter("name");
+		String email = request.getParameter("email");
+		String contact = request.getParameter("contact");
+		String card_id = request.getParameter("card_id");
+		String enrolment_number = request.getParameter("enrolment_no");
+		String photo = request.getParameter("photo");
+		Cyclist newCyclist = new Cyclist(name, email, contact, card_id, enrolment_number, photo);
+		cyDAO.insertCyclist(newCyclist);
+		
+	    try {
+			response.sendRedirect("listCyclist");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
+	private void updateCy(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
+		int id = Integer.parseInt(request.getParameter("id"));
+		String name = request.getParameter("name");
+		String email = request.getParameter("email");
+		String contact = request.getParameter("contact");
+		String card_id = request.getParameter("card_id");
+		String enrolment_number = request.getParameter("enrolment_no");
+		String photo = request.getParameter("photo");
+
+		Cyclist cyclist = new Cyclist(id, name, email, contact, card_id, enrolment_number, photo);
+		cyDAO.updateCyclist(cyclist);
+		
+	    try {
+			response.sendRedirect("listCyclist");
+		} catch ( IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void deleteCy(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
+		int id = Integer.parseInt(request.getParameter("id"));
+		cyDAO.deleteCyclist(id);
+		response.sendRedirect("listCyclist");
+
+	}
+	
+	private void showEditCyForm(HttpServletRequest request, HttpServletResponse response)
+			throws SQLException, ServletException, IOException {
+		HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+        	String card_id = request.getParameter("card_id");
+    		Cyclist existingCyclist = cyDAO.selectCyclist(card_id);
+    		RequestDispatcher dispatcher = request.getRequestDispatcher("add-cyclist-form.jsp");
+    		request.setAttribute("cyclist", existingCyclist);
+    		try {
+				dispatcher.forward(request, response);
+			} catch (ServletException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        } else {
+        	response.sendRedirect("login");
+        }
+	}
+	
 }

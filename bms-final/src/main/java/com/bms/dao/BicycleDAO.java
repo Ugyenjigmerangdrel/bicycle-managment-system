@@ -23,7 +23,7 @@ public class BicycleDAO {
 
 	}
 
-	public void insertUser(Bicycle bicycle) throws SQLException {
+	public void insertBicycle(Bicycle bicycle) throws SQLException {
 		try (Connection connection = DBUtil.getConnection();
 				PreparedStatement pstmt = connection.prepareStatement(INSERT_BC_SQL)) {
 			pstmt.setInt(1, bicycle.getBicycle_no());
