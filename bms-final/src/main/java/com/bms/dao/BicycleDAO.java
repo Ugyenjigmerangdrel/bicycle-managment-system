@@ -26,7 +26,7 @@ public class BicycleDAO {
 	public void insertBicycle(Bicycle bicycle) throws SQLException {
 		try (Connection connection = DBUtil.getConnection();
 				PreparedStatement pstmt = connection.prepareStatement(INSERT_BC_SQL)) {
-			pstmt.setInt(1, bicycle.getBicycle_no());
+			pstmt.setString(1, bicycle.getBicycle_no());
 			pstmt.setString(2, bicycle.getCUUID()); // Use index 2 for email
 			pstmt.setString(3, bicycle.getSUUID()); // Use index 3 for country
 			pstmt.executeUpdate();
@@ -48,7 +48,7 @@ public class BicycleDAO {
 
 			// Step 4: Process the ResultSet object.
 			while (rs.next()) {
-				int bicycle_no = Integer.parseInt(rs.getString("bicycle_no"));
+				String bicycle_no = rs.getString("bicycle_no");
 				String cuuid = rs.getString("cuuid");
 				String suuid = rs.getString("suuid");
 				bicycle = new Bicycle(id, bicycle_no, cuuid, suuid);
@@ -75,7 +75,7 @@ public class BicycleDAO {
 			// Step 4: Process the ResultSet object.
 			while (rs.next()) {
 				int id = rs.getInt("id");
-				int bicycle_no = Integer.parseInt(rs.getString("bicycle_no"));
+				String bicycle_no = rs.getString("bicycle_no");
 				String cuuid = rs.getString("cuuid");
 				String suuid = rs.getString("suuid");
 				bicycles.add(new Bicycle(id, bicycle_no, cuuid, suuid));
@@ -100,7 +100,7 @@ public class BicycleDAO {
 		boolean rowUpdated;
 		try (Connection connection = DBUtil.getConnection();
 				PreparedStatement statement = connection.prepareStatement(UPDATE_BC_SQL);) {
-			statement.setInt(1, bicycle.getBicycle_no());
+			statement.setString(1, bicycle.getBicycle_no());
 			statement.setString(2, bicycle.getCUUID());
 			statement.setString(3, bicycle.getSUUID());
 			statement.setInt(4, bicycle.getId());

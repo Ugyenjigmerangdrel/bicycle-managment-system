@@ -2,11 +2,11 @@ package com.bms.model;
 
 public class Bicycle {
 	private int id;
-	private int bicycle_no;
+	private String bicycle_no;
 	private String CUUID;
 	private String SUUID;
 
-	public Bicycle(int id, int bicycle_no, String cUUID, String sUUID) {
+	public Bicycle(int id, String bicycle_no, String cUUID, String sUUID) {
 		super();
 		this.id = id;
 		this.bicycle_no = bicycle_no;
@@ -14,7 +14,7 @@ public class Bicycle {
 		SUUID = sUUID;
 	}
 
-	public Bicycle(int bicycle_no, String cUUID, String sUUID) {
+	public Bicycle(String bicycle_no, String cUUID, String sUUID) {
 		super();
 		this.bicycle_no = bicycle_no;
 		CUUID = cUUID;
@@ -29,11 +29,11 @@ public class Bicycle {
 		this.id = id;
 	}
 
-	public int getBicycle_no() {
+	public String getBicycle_no() {
 		return bicycle_no;
 	}
 
-	public void setBicycle_no(int bicycle_no) {
+	public void setBicycle_no(String bicycle_no) {
 		this.bicycle_no = bicycle_no;
 	}
 

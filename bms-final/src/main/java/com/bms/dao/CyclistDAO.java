@@ -16,6 +16,7 @@ public class CyclistDAO {
 			+ " (?, ?, ?, ?, ?, ?);";
 
 	private static final String SELECT_CY_BY_ID = "select id,name, email, contact, card_id, enrolment_number, photo from bms_cyclist where card_id =?";
+
 	private static final String SELECT_ALL_CY = "select * from bms_cyclist ";
 	private static final String DELETE_CY_SQL = "delete from bms_cyclist  where id = ?;";
 	private static final String UPDATE_CY_SQL = "update bms_cyclist  set name = ?,email= ?, contact=?, card_id=?, enrolment_number=?, photo=? where id = ?;";

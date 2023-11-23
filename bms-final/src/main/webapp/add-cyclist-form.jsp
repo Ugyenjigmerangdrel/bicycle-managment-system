@@ -79,10 +79,10 @@
                             <div class="card-body">
                           
 	                            <c:if test="${cyclist != null}">
-									<form action="updateCy" method="post" class="needs-validation" novalidate>
+									<form action="updateCy" method="post" id="cyclistForm" class="needs-validation" novalidate>
 								</c:if>
 								<c:if test="${cyclist == null}">
-									<form action="insertCy" method="post" class="needs-validation" novalidate>
+									<form action="insertCy" method="post" id="cyclistForm" class="needs-validation" novalidate>
 								</c:if>
 								
 								<c:if test="${cyclist != null}">
@@ -201,6 +201,18 @@
     
     <script type="text/javascript">
     <%@include file="js/sb-admin-2.min.js" %>
+    </script>
+    
+    <!-- Form Validation Script -->
+    <script>
+        
+        document.getElementById('cyclistForm').addEventListener('submit', function (event) {
+            if (!this.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            this.classList.add('was-validated');
+        });
     </script>
   </body>
 </html>

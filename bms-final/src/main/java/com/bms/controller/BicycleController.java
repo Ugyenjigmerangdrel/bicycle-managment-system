@@ -14,11 +14,12 @@ import javax.servlet.http.HttpSession;
 
 import com.bms.dao.BicycleDAO;
 import com.bms.dao.CyclistDAO;
+import com.bms.dao.MasterDAO;
 import com.bms.dao.UserDAO;
 import com.bms.model.Bicycle;
 import com.bms.model.Cyclist;
 import com.bms.model.User;
-
+import com.bms.model.Master;
 
 
 /**
@@ -30,11 +31,13 @@ public class BicycleController extends HttpServlet {
     private BicycleDAO bcDAO;
     private UserDAO userDAO; // Add UserDAO instance variable
     private CyclistDAO cyDAO;
+    private MasterDAO mDAO;
    
     public BicycleController() {
     	bcDAO = new BicycleDAO();
     	userDAO = new UserDAO();
     	cyDAO = new CyclistDAO();
+    	mDAO = new MasterDAO();
     }
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -96,8 +99,20 @@ public class BicycleController extends HttpServlet {
 			case "/listCyclist":
 				listCY(request, response);
 				break;
-			default:
+			case "/history":
+				listHistory(request, response);
+				break;
+			case "/viewPath":
+				showPath(request, response);
+				break;
+			case "/listBicycle":
 				listBC(request, response);
+				break;
+			case "/tracePath":
+				showActiveMap(request, response);
+				break;
+			default:
+				showActive(request, response);				
 				break;
 			}
 		} catch (SQLException ex) {
@@ -163,6 +178,56 @@ public class BicycleController extends HttpServlet {
         }
     }
 	
+	private void showActive(HttpServletRequest request, HttpServletResponse response)
+            throws SQLException, IOException, ServletException{
+		HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+
+        if (user != null) {
+            // User is logged in, proceed with listing bicycles
+            List<Master> listMaster = mDAO.selectAllActive();
+            request.setAttribute("listMaster", listMaster);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("show-active.jsp");
+            try {
+				dispatcher.forward(request, response);
+			} catch (ServletException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        } else {
+            // User is not logged in, redirect to the login page
+            response.sendRedirect("login");
+        }
+	}
+	
+	private void listHistory(HttpServletRequest request, HttpServletResponse response)
+            throws SQLException, IOException, ServletException {
+        // Check if the user is logged in
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+
+        if (user != null) {
+            // User is logged in, proceed with listing bicycles
+            List<Master> listBc = mDAO.selectAllMaster();
+            request.setAttribute("listMaster", listBc);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("master-list.jsp");
+            try {
+				dispatcher.forward(request, response);
+			} catch (ServletException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        } else {
+            // User is not logged in, redirect to the login page
+            response.sendRedirect("login");
+        }
+    }
 	
 	private void showNewForm(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -172,6 +237,40 @@ public class BicycleController extends HttpServlet {
         
 		if (user != null) {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("add-bicycle-form.jsp");
+			dispatcher.forward(request, response);
+		} else {
+			response.sendRedirect("login");
+		}
+	}
+	
+	private void showPath(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		
+		HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        
+		if (user != null) {
+			String cardId = request.getParameter("card_id");
+			Cyclist cyclist = cyDAO.selectCyclist(cardId);
+			RequestDispatcher dispatcher = request.getRequestDispatcher("showPath.jsp");
+			request.setAttribute("cyclist", cyclist);
+			dispatcher.forward(request, response);
+		} else {
+			response.sendRedirect("login");
+		}
+	}
+	
+	private void showActiveMap(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		
+		HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        
+		if (user != null) {
+			String cardId = request.getParameter("card_id");
+			Cyclist cyclist = cyDAO.selectCyclist(cardId);
+			RequestDispatcher dispatcher = request.getRequestDispatcher("tracePath.jsp");
+			request.setAttribute("cyclist", cyclist);
 			dispatcher.forward(request, response);
 		} else {
 			response.sendRedirect("login");
@@ -194,31 +293,31 @@ public class BicycleController extends HttpServlet {
 	}
 
 	private void insertBC(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
-		int bicycle_no = Integer.parseInt(request.getParameter("bc_no"));
+		String bicycle_no = request.getParameter("bc_no");
 		String cuuid = request.getParameter("cuuid");
 		String suuid = request.getParameter("suuid");
 		Bicycle newbicycle = new Bicycle(bicycle_no, cuuid, suuid);
 		bcDAO.insertBicycle(newbicycle);
 		 // Use forward instead of sendRedirect
-		response.sendRedirect("list");
+		response.sendRedirect("listBicycle");
 	   
 	}
 
 	private void updateBC(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
 		int id = Integer.parseInt(request.getParameter("id"));
-		int bicycle_no = Integer.parseInt(request.getParameter("bc_no"));
+		String bicycle_no = request.getParameter("bc_no");
 		String cuuid = request.getParameter("cuuid");
 		String suuid = request.getParameter("suuid");
 
 		Bicycle bicycle = new Bicycle(id, bicycle_no, cuuid, suuid);
 		bcDAO.updateBicycle(bicycle);
-		response.sendRedirect("list");
+		response.sendRedirect("listBicycle");
 	}
 
 	private void deleteBC(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
 		int id = Integer.parseInt(request.getParameter("id"));
 		bcDAO.deleteBicycle(id);
-		response.sendRedirect("list");
+		response.sendRedirect("listBicycle");
 
 	}
 	

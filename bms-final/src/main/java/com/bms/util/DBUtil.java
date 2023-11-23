@@ -5,9 +5,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBUtil {
-	private static String jdbcURL = "jdbc:mysql://localhost:3306/synergy";
-	private static String jdbcUsername = "root";
-	private static String jdbcPassword = "root";
+	private static String jdbcURL = "jdbc:mysql://mysqlsynergy.mysql.database.azure.com:3306/synergy?useSSL=true";
+	//private static String jdbcURL = "jdbc:mysql://localhost:3306/synergy";
+	private static String jdbcUsername = "synergy_admin";
+	private static String jdbcPassword = "workshop#123";
 	
     public static Connection getConnection() throws SQLException {
     	Connection connection = null;
